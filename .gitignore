@@ -13,3 +13,5 @@ perf.data
 perf.data.old
 /kodama-capi/Cargo.lock
 /kodama-capi/target
+
+Cargo.lock

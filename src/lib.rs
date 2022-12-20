@@ -235,8 +235,6 @@ use std::io;
 use std::result;
 use std::str::FromStr;
 
-use num_traits::Float;
-
 pub use crate::chain::{nnchain, nnchain_with};
 pub use crate::dendrogram::{Dendrogram, Step};
 pub use crate::generic::{generic, generic_with};
@@ -244,6 +242,7 @@ pub use crate::primitive::{primitive, primitive_with};
 pub use crate::spanning::{mst, mst_with};
 
 use crate::active::Active;
+use crate::float::Float;
 use crate::queue::LinkageHeap;
 use crate::union::LinkageUnionFind;
 
@@ -251,6 +250,7 @@ mod active;
 mod chain;
 mod condensed;
 mod dendrogram;
+mod float;
 mod generic;
 mod method;
 mod primitive;
