@@ -13,6 +13,7 @@ use crate::{LinkageState, MethodChain};
 /// [`linkage`](fn.linkage.html),
 /// since it tries to pick the fastest algorithm depending on the method
 /// supplied.
+#[inline]
 pub fn nnchain<T: Float>(
     dis: &mut [T],
     observations: usize,

@@ -22,10 +22,12 @@ pub struct LinkageHeap<T> {
 }
 
 impl<T: Float> LinkageHeap<T> {
+    #[inline]
     pub fn new() -> LinkageHeap<T> {
         LinkageHeap::with_len(0)
     }
 
+    #[inline]
     pub fn with_len(len: usize) -> LinkageHeap<T> {
         LinkageHeap {
             heap: (0..len).collect(),
@@ -35,6 +37,7 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     pub fn reset(&mut self, len: usize) {
         self.heap.resize(len, 0);
         self.observations.resize(len, 0);
@@ -49,14 +52,17 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
+    #[inline]
     pub fn len(&self) -> usize {
         self.heap.len()
     }
 
+    #[inline]
     pub fn pop(&mut self) -> Option<usize> {
         if self.is_empty() {
             return None;
@@ -74,6 +80,7 @@ impl<T: Float> LinkageHeap<T> {
         Some(last)
     }
 
+    #[inline]
     pub fn peek(&self) -> Option<usize> {
         if self.is_empty() {
             None
@@ -82,6 +89,7 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     pub fn heapify<F: FnMut(&mut [T])>(&mut self, mut f: F) {
         let len = self.priorities.len();
         self.reset(len);
@@ -93,11 +101,13 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     pub fn priority(&self, observation: usize) -> &T {
         assert!(!self.removed[observation]);
         &self.priorities[observation]
     }
 
+    #[inline]
     pub fn set_priority(&mut self, observation: usize, priority: T) {
         assert!(!self.removed[observation]);
 
@@ -110,12 +120,10 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     fn sift_up(&mut self, o: usize) {
         loop {
-            let po = match self.parent(o) {
-                None => break,
-                Some(po) => po,
-            };
+            let Some(po) = self.parent(o) else { break };
             if self.priorities[po] < self.priorities[o] {
                 break;
             }
@@ -123,6 +131,7 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     fn sift_down(&mut self, o: usize) {
         loop {
             let mut child = o;
@@ -144,6 +153,7 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     fn parent(&self, o: usize) -> Option<usize> {
         if self.observations[o] == 0 {
             None
@@ -152,12 +162,14 @@ impl<T: Float> LinkageHeap<T> {
         }
     }
 
+    #[inline]
     fn children(&self, o: usize) -> (Option<usize>, Option<usize>) {
         let i = self.observations[o];
         let (left, right) = (2 * i + 1, 2 * i + 2);
-        (self.heap.get(left).cloned(), self.heap.get(right).cloned())
+        (self.heap.get(left).copied(), self.heap.get(right).copied())
     }
 
+    #[inline]
     fn swap(&mut self, o1: usize, o2: usize) {
         self.heap.swap(self.observations[o1], self.observations[o2]);
         self.observations.swap(o1, o2);

@@ -9,7 +9,7 @@ Parts of the implementation have also been inspired by his C++
 library, [`fastcluster`](http://danifold.net/fastcluster.html).
 Müllner's work, in turn, is based on the hierarchical clustering facilities
 provided by MATLAB and
-[SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html).
+[`SciPy`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html).
 
 The runtime performance of this library is on par with Müllner's `fastcluster`
 implementation.
@@ -219,7 +219,7 @@ There are some caveats to this testing strategy:
    distinct pairs of observations. That means there are multiple correct
    dendrograms depending on the input. This case is not tested, and instead,
    all input matrices are forced to contain distinct dissimilarity values.
-4. The output of both Müllner's and SciPy's implementations of hierarchical
+4. The output of both Müllner's and `SciPy`'s implementations of hierarchical
    clustering has been hand-checked with the output of this crate. It would
    be better to test this automatically, but the scaffolding has not been
    built.
@@ -274,16 +274,18 @@ pub enum Error {
 impl error::Error for Error {}
 
 impl fmt::Display for Error {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             Error::InvalidMethod(ref name) => {
-                write!(f, "unrecognized method name: '{}'", name)
+                write!(f, "unrecognized method name: '{name}'")
             }
         }
     }
 }
 
 impl From<Error> for io::Error {
+    #[inline]
     fn from(err: Error) -> io::Error {
         io::Error::new(io::ErrorKind::Other, err)
     }
@@ -405,6 +407,7 @@ impl Method {
     /// More specifically, if this method is a method that the `nnchain`
     /// algorithm can compute, then this returns the corresponding
     /// `MethodChain` value. Otherwise, this returns `None`.
+    #[inline]
     pub fn into_method_chain(self) -> Option<MethodChain> {
         match self {
             Method::Single => Some(MethodChain::Single),
@@ -418,15 +421,14 @@ impl Method {
 
     /// Returns true if and only if the dendrogram should be sorted before
     /// generating cluster labels.
+    #[inline]
     fn requires_sorting(&self) -> bool {
-        match *self {
-            Method::Centroid | Method::Median => false,
-            _ => true,
-        }
+        !matches!(*self, Method::Centroid | Method::Median)
     }
 
     /// Square the given matrix if and only if this method must compute
     /// dissimilarities between clusters on the squares of dissimilarities.
+    #[inline]
     fn square<T: Float>(&self, condensed_matrix: &mut [T]) {
         if self.on_squares() {
             for x in condensed_matrix.iter_mut() {
@@ -437,6 +439,7 @@ impl Method {
 
     /// Take the square-root of each step-wise dissimilarity in the given
     /// dendrogram if this method operates on squares.
+    #[inline]
     fn sqrt<T: Float>(&self, dend: &mut Dendrogram<T>) {
         if self.on_squares() {
             for step in dend.steps_mut() {
@@ -447,17 +450,16 @@ impl Method {
 
     /// Return true if and only if this method computes dissimilarities on
     /// squares.
+    #[inline]
     fn on_squares(&self) -> bool {
-        match *self {
-            Method::Ward | Method::Centroid | Method::Median => true,
-            _ => false,
-        }
+        matches!(*self, Method::Ward | Method::Centroid | Method::Median)
     }
 }
 
 impl FromStr for Method {
     type Err = Error;
 
+    #[inline]
     fn from_str(s: &str) -> Result<Method> {
         match s {
             "single" => Ok(Method::Single),
@@ -499,6 +501,7 @@ pub enum MethodChain {
 impl MethodChain {
     /// Convert this `nnchain` linkage method into a general purpose
     /// linkage method.
+    #[inline]
     pub fn into_method(self) -> Method {
         match self {
             MethodChain::Single => Method::Single,
@@ -511,12 +514,14 @@ impl MethodChain {
 
     /// Square the given matrix if and only if this method must compute
     /// dissimilarities between clusters on the squares of dissimilarities.
+    #[inline]
     fn square<T: Float>(&self, condensed_matrix: &mut [T]) {
         self.into_method().square(condensed_matrix);
     }
 
     /// Take the square-root of each step-wise dissimilarity in the given
     /// dendrogram if this method operates on squares.
+    #[inline]
     fn sqrt<T: Float>(&self, dend: &mut Dendrogram<T>) {
         self.into_method().sqrt(dend);
     }
@@ -525,6 +530,7 @@ impl MethodChain {
 impl FromStr for MethodChain {
     type Err = Error;
 
+    #[inline]
     fn from_str(s: &str) -> Result<MethodChain> {
         match s {
             "single" => Ok(MethodChain::Single),
@@ -556,6 +562,7 @@ impl FromStr for MethodChain {
 /// `observations - 1` steps, where each step corresponds to the creation of
 /// a cluster by merging exactly two previous clusters. The very last cluster
 /// created contains all observations.
+#[inline]
 pub fn linkage<T: Float>(
     condensed_dissimilarity_matrix: &mut [T],
     observations: usize,
@@ -583,6 +590,7 @@ pub fn linkage<T: Float>(
 /// [`Dendrogram`](struct.Dendrogram.html)
 /// that is mutated in place. This is in constrast to `linkage` where a
 /// dendrogram is created and returned.
+#[inline]
 pub fn linkage_with<T: Float>(
     state: &mut LinkageState<T>,
     condensed_dissimilarity_matrix: &mut [T],
@@ -657,6 +665,7 @@ impl<T: Float> LinkageState<T> {
     ///
     /// The clustering functions will automatically resize the scratch space
     /// as needed based on the number of observations being clustered.
+    #[inline]
     pub fn new() -> LinkageState<T> {
         LinkageState {
             sizes: vec![],
@@ -671,6 +680,7 @@ impl<T: Float> LinkageState<T> {
 
     /// Clear the scratch space and allocate enough room for `size`
     /// observations.
+    #[inline]
     fn reset(&mut self, size: usize) {
         self.sizes.clear();
         self.sizes.resize(size, 1);
@@ -693,6 +703,7 @@ impl<T: Float> LinkageState<T> {
 
     /// Merge `cluster1` and `cluster2` with the given `dissimilarity` into the
     /// given dendrogram.
+    #[inline]
     fn merge(
         &mut self,
         dend: &mut Dendrogram<T>,
@@ -700,7 +711,7 @@ impl<T: Float> LinkageState<T> {
         cluster2: usize,
         dissimilarity: T,
     ) {
-        self.sizes[cluster2] = self.sizes[cluster1] + self.sizes[cluster2];
+        self.sizes[cluster2] += self.sizes[cluster1];
         self.active.remove(cluster1);
         dend.push(Step::new(
             cluster1,

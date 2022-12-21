@@ -11,6 +11,7 @@ use crate::{LinkageState, Method};
 /// [`linkage`](fn.linkage.html),
 /// since it tries to pick the fastest algorithm depending on the method
 /// supplied.
+#[inline]
 pub fn mst<T: Float>(dis: &mut [T], observations: usize) -> Dendrogram<T> {
     let mut state = LinkageState::new();
     let mut steps = Dendrogram::new(observations);

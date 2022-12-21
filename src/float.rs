@@ -37,60 +37,74 @@ pub trait Float:
 }
 
 impl Float for f32 {
+    #[inline]
     fn from_usize(v: usize) -> f32 {
         v as f32
     }
 
+    #[inline]
     fn from_float<F: Float>(v: F) -> f32 {
         v.to_f64() as f32
     }
 
+    #[inline]
     fn to_f64(self) -> f64 {
         self as f64
     }
 
+    #[inline]
     fn infinity() -> f32 {
         f32::INFINITY
     }
 
+    #[inline]
     fn max_value() -> f32 {
         f32::MAX
     }
 
+    #[inline]
     fn sqrt(self) -> f32 {
         f32::sqrt(self)
     }
 
+    #[inline]
     fn abs(self) -> f32 {
         f32::abs(self)
     }
 }
 
 impl Float for f64 {
+    #[inline]
     fn from_usize(v: usize) -> f64 {
         v as f64
     }
 
+    #[inline]
     fn from_float<F: Float>(v: F) -> f64 {
         v.to_f64()
     }
 
+    #[inline]
     fn to_f64(self) -> f64 {
         self
     }
 
+    #[inline]
     fn infinity() -> f64 {
         f64::INFINITY
     }
 
+    #[inline]
     fn max_value() -> f64 {
         f64::MAX
     }
 
+    #[inline]
     fn sqrt(self) -> f64 {
         f64::sqrt(self)
     }
 
+    #[inline]
     fn abs(self) -> f64 {
         f64::abs(self)
     }

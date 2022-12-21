@@ -43,27 +43,30 @@ impl<'a, T> CondensedMatrix<'a, T> {
     /// As a special case, if `observations` is `<= 1`, then it is treated as
     /// if it is equivalent to `0`. In this case, the matrix provided must be
     /// empty.
+    #[inline]
     pub fn new(
         data: &'a mut [T],
         observations: usize,
     ) -> CondensedMatrix<'a, T> {
         if data.is_empty() {
             assert!(observations <= 1);
-            CondensedMatrix { data: data, observations: 0 }
+            CondensedMatrix { data, observations: 0 }
         } else {
             assert!(observations >= 2);
             assert_eq!((observations * (observations - 1)) / 2, data.len());
-            CondensedMatrix { data: data, observations: observations }
+            CondensedMatrix { data, observations }
         }
     }
 
     /// Return the number of observations that make up this matrix.
+    #[inline]
     pub fn observations(&self) -> usize {
         self.observations
     }
 
     /// Convert the given row and column 2-dimensional index into an index
     /// into the condensed matrix.
+    #[inline]
     fn matrix_to_condensed_idx(&self, row: usize, column: usize) -> usize {
         debug_assert!(row < column);
         debug_assert!(column < self.observations());
@@ -84,12 +87,14 @@ impl<'a, T> CondensedMatrix<'a, T> {
 impl<'a, T> Index<[usize; 2]> for CondensedMatrix<'a, T> {
     type Output = T;
 
+    #[inline]
     fn index(&self, idx: [usize; 2]) -> &T {
         &self.data[self.matrix_to_condensed_idx(idx[0], idx[1])]
     }
 }
 
 impl<'a, T> IndexMut<[usize; 2]> for CondensedMatrix<'a, T> {
+    #[inline]
     fn index_mut(&mut self, idx: [usize; 2]) -> &mut T {
         let i = self.matrix_to_condensed_idx(idx[0], idx[1]);
         &mut self.data[i]
