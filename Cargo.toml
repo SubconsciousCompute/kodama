@@ -12,7 +12,7 @@ readme = "README.md"
 keywords = ["agglomerative", "hierarchical", "cluster", "fastcluster", "linkage"]
 license = "MIT"
 exclude = ["data/locations/*.dist"]
-edition = "2018"
+edition = "2021"
 
 [workspace]
 members = ["kodama-bin", "kodama-capi"]
@@ -31,10 +31,17 @@ lazy_static = "1.4.0"
 quickcheck = { version = "1.0.3", default-features = false }
 
 [profile.release]
-debug = true
+lto = true
+codegen-units = 1
+opt-level = 3
+panic = "abort"
 
 [profile.bench]
 debug = true
+lto = true
+codegen-units = 1
+opt-level = 3
+panic = "abort"
 
 [profile.test]
 opt-level = 3

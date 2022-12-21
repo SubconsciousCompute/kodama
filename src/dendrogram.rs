@@ -26,7 +26,7 @@ use crate::float::Float;
 ///    `(N + N - 1) - 1` (since there are always `N - 1` steps in a
 ///    dendrogram).
 ///
-/// This labeling scheme corresponds to the same labeling scheme used by SciPy.
+/// This labeling scheme corresponds to the same labeling scheme used by `SciPy`.
 ///
 /// The type parameter `T` refers to the type of dissimilarity used in the
 /// steps. In practice, `T` is a floating point type.
@@ -75,11 +75,9 @@ pub struct Step<T> {
 impl<T> Dendrogram<T> {
     /// Return a new dendrogram with space for the given number of
     /// observations.
+    #[inline]
     pub fn new(observations: usize) -> Dendrogram<T> {
-        Dendrogram {
-            steps: Vec::with_capacity(observations),
-            observations: observations,
-        }
+        Dendrogram { steps: Vec::with_capacity(observations), observations }
     }
 
     /// Clear this dendrogram and ensure there is space for the given number
@@ -90,6 +88,7 @@ impl<T> Dendrogram<T> {
     /// Note that this method does not need to be called before passing it to
     /// one of the clustering functions. The clustering functions will reset
     /// the dendrogram for you.
+    #[inline]
     pub fn reset(&mut self, observations: usize) {
         self.steps.clear();
         self.observations = observations;
@@ -101,32 +100,38 @@ impl<T> Dendrogram<T> {
     ///
     /// This method panics if the dendrogram has `N - 1` steps, where `N` is
     /// the number of observations supported by this dendrogram.
+    #[inline]
     pub fn push(&mut self, step: Step<T>) {
         assert!(self.len() < self.observations().saturating_sub(1));
         self.steps.push(step);
     }
 
     /// Returns the steps in the dendrogram.
+    #[inline]
     pub fn steps(&self) -> &[Step<T>] {
         &self.steps
     }
 
     /// Return a mutable slice of the steps in this dendrogram.
+    #[inline]
     pub fn steps_mut(&mut self) -> &mut [Step<T>] {
         &mut self.steps
     }
 
     /// Return the number of steps in this dendrogram.
+    #[inline]
     pub fn len(&self) -> usize {
         self.steps.len()
     }
 
     /// Return true if and only if this dendrogram has no steps.
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.steps.is_empty()
     }
 
     /// Return the number of observations that this dendrogram supports.
+    #[inline]
     pub fn observations(&self) -> usize {
         self.observations
     }
@@ -136,6 +141,7 @@ impl<T> Dendrogram<T> {
     ///
     /// The label may be any value in the half-open interval
     /// `[0, N + N - 1)`, where `N` is the total number of observations.
+    #[inline]
     pub fn cluster_size(&self, label: usize) -> usize {
         if label < self.observations() {
             1
@@ -152,6 +158,7 @@ impl<T: Float> Dendrogram<T> {
     /// step. In particular, two dissimilarities are considered equal if and
     /// only if the absolute value of their difference is less than or equal to
     /// the given `epsilon` value.
+    #[inline]
     pub fn eq_with_epsilon(&self, other: &Dendrogram<T>, epsilon: T) -> bool {
         if self.len() != other.len() {
             return false;
@@ -167,12 +174,14 @@ impl<T: Float> Dendrogram<T> {
 
 impl<T> ops::Index<usize> for Dendrogram<T> {
     type Output = Step<T>;
+    #[inline]
     fn index(&self, i: usize) -> &Step<T> {
         &self.steps[i]
     }
 }
 
 impl<T> ops::IndexMut<usize> for Dendrogram<T> {
+    #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Step<T> {
         &mut self.steps[i]
     }
@@ -183,6 +192,7 @@ impl<T> Step<T> {
     ///
     /// Note that the clustering labels given are normalized such that the
     /// smallest label is always assigned to `cluster1`.
+    #[inline]
     pub fn new(
         mut cluster1: usize,
         mut cluster2: usize,
@@ -192,18 +202,14 @@ impl<T> Step<T> {
         if cluster2 < cluster1 {
             mem::swap(&mut cluster1, &mut cluster2);
         }
-        Step {
-            cluster1: cluster1,
-            cluster2: cluster2,
-            dissimilarity: dissimilarity,
-            size: size,
-        }
+        Step { cluster1, cluster2, dissimilarity, size }
     }
 
     /// Set the cluster labels on this step.
     ///
     /// Note that the clustering labels given are normalized such that the
     /// smallest label is always assigned to `cluster1`.
+    #[inline]
     pub fn set_clusters(&mut self, mut cluster1: usize, mut cluster2: usize) {
         if cluster2 < cluster1 {
             mem::swap(&mut cluster1, &mut cluster2);
@@ -220,6 +226,7 @@ impl<T: Float> Step<T> {
     /// step. In particular, two dissimilarity are considered equal if and only
     /// if the absolute value of their difference is less than or equal to the
     /// given `epsilon` value.
+    #[inline]
     pub fn eq_with_epsilon(&self, other: &Step<T>, epsilon: T) -> bool {
         if self == other {
             return true;

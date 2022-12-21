@@ -18,11 +18,13 @@ pub struct Active {
 
 impl Active {
     /// Create a new empty active list.
+    #[inline]
     pub fn new() -> Active {
         Active { start: 0, prev: vec![], next: vec![] }
     }
 
     /// Create a new active list with elements `0` through `len-1`, inclusive.
+    #[inline]
     pub fn with_len(len: usize) -> Active {
         let mut a = Active::new();
         a.reset(len);
@@ -32,6 +34,7 @@ impl Active {
     /// Reset this list to the given length as if a new list were created.
     ///
     /// This permits reusing this list's allocation.
+    #[inline]
     pub fn reset(&mut self, len: usize) {
         self.start = 0;
         self.prev.resize(len, 0);
@@ -46,6 +49,7 @@ impl Active {
     /// Return true if the given element is still in the list.
     ///
     /// This runs in constant time.
+    #[inline]
     pub fn contains(&self, i: usize) -> bool {
         self.next[i] > 0
     }
@@ -55,6 +59,7 @@ impl Active {
     /// If the given element has already been removed, then this is a no-op.
     ///
     /// This runs in constant time.
+    #[inline]
     pub fn remove(&mut self, i: usize) {
         if !self.contains(i) {
             return;
@@ -75,6 +80,7 @@ impl Active {
     ///
     /// The iterator runs in time proportional to the number of elements in
     /// the list.
+    #[inline]
     pub fn iter(&self) -> ActiveIter<'_> {
         ActiveIter(ActiveRange {
             active: self,
@@ -90,6 +96,7 @@ impl Active {
     /// elements in the list in the given range. Otherwise, no such guarantee
     /// is provided, but has an upper bound on the total number of elements
     /// that have ever been in the list.
+    #[inline]
     pub fn range<R: RangeBound<usize>>(&self, range: R) -> ActiveRange<'_> {
         let mut start = match range.start() {
             Bound::Unbounded => self.start,
@@ -113,13 +120,14 @@ impl Active {
         while start < self.next.len() && !self.contains(start) {
             start += 1;
         }
-        ActiveRange { active: self, cur: start, end: end }
+        ActiveRange { active: self, cur: start, end }
     }
 }
 
 impl<'a> IntoIterator for &'a Active {
-    type IntoIter = ActiveIter<'a>;
     type Item = usize;
+    type IntoIter = ActiveIter<'a>;
+    #[inline]
     fn into_iter(self) -> ActiveIter<'a> {
         self.iter()
     }
@@ -166,7 +174,7 @@ impl<'a> Iterator for ActiveRange<'a> {
 
 /// A trait that abstracts over the different types of ranges.
 ///
-/// We define this ourselves until std::collections::range stabilizes.
+/// We define this ourselves until `std::collections::range` stabilizes.
 pub trait RangeBound<T> {
     /// Return the start bound.
     fn start(&self) -> Bound<&T>;
@@ -175,36 +183,44 @@ pub trait RangeBound<T> {
 }
 
 impl<T> RangeBound<T> for RangeFull {
+    #[inline]
     fn start(&self) -> Bound<&T> {
         Bound::Unbounded
     }
+    #[inline]
     fn end(&self) -> Bound<&T> {
         Bound::Unbounded
     }
 }
 
 impl<T> RangeBound<T> for RangeFrom<T> {
+    #[inline]
     fn start(&self) -> Bound<&T> {
         Bound::Included(&self.start)
     }
+    #[inline]
     fn end(&self) -> Bound<&T> {
         Bound::Unbounded
     }
 }
 
 impl<T> RangeBound<T> for RangeTo<T> {
+    #[inline]
     fn start(&self) -> Bound<&T> {
         Bound::Unbounded
     }
+    #[inline]
     fn end(&self) -> Bound<&T> {
         Bound::Excluded(&self.end)
     }
 }
 
 impl<T> RangeBound<T> for Range<T> {
+    #[inline]
     fn start(&self) -> Bound<&T> {
         Bound::Included(&self.start)
     }
+    #[inline]
     fn end(&self) -> Bound<&T> {
         Bound::Excluded(&self.end)
     }

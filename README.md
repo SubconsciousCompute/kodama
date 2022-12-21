@@ -1,5 +1,14 @@
-kodama
-======
+# kodama
+
+### Changes made over the original [crate](https://github.com/diffeo/kodama): 
+
+- Update Rust edition from 2018 to 2021
+- Merge [`ag/updates`](https://github.com/diffeo/kodama/tree/ag/updates) branch into master
+- Heavier use of `#[inline]`
+- Use `codegen = 1`, `lto = true` and `opt-level = 3` in `cargo.toml` for release version
+- Use `panic = abort` (plays nicely with inlining and making more code fit in instructions cache)
+- A few other small changes
+
 This crate provides a fast implementation of agglomerative
 [hierarchical clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering).
 
@@ -33,13 +42,13 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-kodama = "0.1"
+kodama = { git = "https://github.com/SubconsciousCompute/kodama" }
 ```
 
 and this to your crate root:
 
 ```rust
-extern crate kodama;
+use kodama;
 ```
 
 ### C API and Go bindings

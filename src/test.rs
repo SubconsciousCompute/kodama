@@ -18,6 +18,7 @@ impl DistinctMatrix {
     /// dissimilarity matrix.
     ///
     /// Also, any NaN values in the matrix are replaced with `0`.
+    #[inline]
     pub fn new(mut mat: Vec<f64>) -> DistinctMatrix {
         make_distinct(&mut mat);
 
@@ -44,17 +45,20 @@ impl DistinctMatrix {
     }
 
     /// Return a copy of the condensed pairwise dissimilarity matrix.
+    #[inline]
     pub fn matrix(&self) -> Vec<f64> {
         self.matrix.to_vec()
     }
 
     /// Return the number of observations in this matrix.
+    #[inline]
     pub fn len(&self) -> usize {
         self.len
     }
 }
 
 impl Arbitrary for DistinctMatrix {
+    #[inline]
     fn arbitrary(_g: &mut Gen) -> DistinctMatrix {
         let mut rng = rand::thread_rng();
         let size = rng.gen_range(0..30);
@@ -67,6 +71,7 @@ impl Arbitrary for DistinctMatrix {
         DistinctMatrix::new(dis)
     }
 
+    #[inline]
     fn shrink(&self) -> Box<dyn Iterator<Item = DistinctMatrix>> {
         Box::new(self.matrix.shrink().map(DistinctMatrix::new))
     }
@@ -88,6 +93,7 @@ fn make_distinct(xs: &mut Vec<f64>) {
     impl Eq for NonNanF64 {}
 
     impl Ord for NonNanF64 {
+        #[inline]
         fn cmp(&self, other: &NonNanF64) -> Ordering {
             self.0.partial_cmp(&other.0).unwrap()
         }
@@ -116,6 +122,7 @@ fn make_distinct(xs: &mut Vec<f64>) {
 ///
 /// Note that the size may be invalid. For example, a condensed matrix of
 /// size `2` isn't valid.
+#[inline]
 fn observations(condensed_matrix_size: usize) -> usize {
     ((condensed_matrix_size as f64) * 2.0).sqrt().ceil() as usize
 }

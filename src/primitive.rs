@@ -12,6 +12,7 @@ use crate::{LinkageState, Method};
 /// hierarchical clustering, and is therefore terribly slow. Use
 /// [`linkage`](fn.linkage.html)
 /// instead to have the appropriate algorithm chosen for you.
+#[inline]
 pub fn primitive<T: Float>(
     dis: &mut [T],
     observations: usize,
@@ -200,7 +201,7 @@ fn argmin<T: Float>(
     // minimum.
     let mut min = match active.iter().next() {
         None => return None,
-        Some(row) => match active.range(row..).skip(1).next() {
+        Some(row) => match active.range(row..).nth(1) {
             None => return None,
             Some(col) => (row, col, matrix[[row, col]]),
         },

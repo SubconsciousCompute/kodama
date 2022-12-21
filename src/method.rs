@@ -55,10 +55,10 @@ pub fn centroid<T: Float>(
 ) {
     let size_a = T::from_usize(size_a);
     let size_b = T::from_usize(size_b);
-    let size_ab = size_a + size_b;
+    let size_a_plus_b = size_a + size_b;
 
-    *b = (((size_a * a) + (size_b * *b)) / size_ab)
-        - ((size_a * size_b * merged_dist) / (size_ab * size_ab));
+    *b = (((size_a * a) + (size_b * *b)) / size_a_plus_b)
+        - ((size_a * size_b * merged_dist) / (size_a_plus_b * size_a_plus_b));
 }
 
 #[inline]

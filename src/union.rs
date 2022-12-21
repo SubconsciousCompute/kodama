@@ -23,6 +23,7 @@ pub struct LinkageUnionFind {
 }
 
 impl Default for LinkageUnionFind {
+    #[inline]
     fn default() -> LinkageUnionFind {
         LinkageUnionFind::new()
     }
@@ -30,12 +31,14 @@ impl Default for LinkageUnionFind {
 
 impl LinkageUnionFind {
     /// Create a new empty set.
+    #[inline]
     pub fn new() -> LinkageUnionFind {
         LinkageUnionFind::with_len(0)
     }
 
     /// Create a new set that can merge clusters for exactly `len`
     /// observations.
+    #[inline]
     pub fn with_len(len: usize) -> LinkageUnionFind {
         let size = if len == 0 { 0 } else { 2 * len - 1 };
         LinkageUnionFind { parents: (0..size).collect(), next_parent: len }
@@ -43,6 +46,7 @@ impl LinkageUnionFind {
 
     /// Clear this allocation and resize it as appropriate to support `len`
     /// observations.
+    #[inline]
     pub fn reset(&mut self, len: usize) {
         let size = if len == 0 { 0 } else { 2 * len - 1 };
         self.next_parent = len;
@@ -55,6 +59,7 @@ impl LinkageUnionFind {
     /// Union the two clusters represented by the given labels.
     ///
     /// If the two clusters have already been merged, then this is a no-op.
+    #[inline]
     pub fn union(&mut self, cluster1: usize, cluster2: usize) {
         // If the clusters are already in the same set, then
         // this is a no-op.
@@ -65,10 +70,11 @@ impl LinkageUnionFind {
         assert!(self.next_parent < self.parents.len());
         self.parents[cluster1] = self.next_parent;
         self.parents[cluster2] = self.next_parent;
-        self.next_parent = self.next_parent + 1;
+        self.next_parent += 1;
     }
 
     /// Return the root cluster label containing the cluster given.
+    #[inline]
     pub fn find(&mut self, mut cluster: usize) -> usize {
         // Find the parent of this cluster. The parent
         // is the "label" of the cluster and is a root
@@ -89,6 +95,7 @@ impl LinkageUnionFind {
 
     /// Return the parent of the given cluster, if one exists. If the given
     /// cluster is a root, then `None` is returned.
+    #[inline]
     fn parent(&self, cluster: usize) -> Option<usize> {
         let p = self.parents[cluster];
         if p == cluster {
@@ -102,6 +109,7 @@ impl LinkageUnionFind {
     ///
     /// If the given method requires the dendrogram to be sorted, then the
     /// steps of the dendrogram are sorted by their dissimilarities.
+    #[inline]
     pub fn relabel<T: PartialOrd>(
         &mut self,
         dendrogram: &mut Dendrogram<T>,

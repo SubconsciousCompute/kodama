@@ -10,6 +10,7 @@ use crate::{LinkageState, Method};
 /// [`linkage`](fn.linkage.html),
 /// since it tries to pick the fastest algorithm depending on the method
 /// supplied.
+#[inline]
 pub fn generic<T: Float>(
     condensed_dissimilarity_matrix: &mut [T],
     observations: usize,
